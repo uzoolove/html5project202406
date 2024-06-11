@@ -108,7 +108,7 @@ module.exports.buyCouponForm = async (_id) => {
     'image.detail': 1
 	};
 	// TODO 쿠폰 정보를 조회한다.
-	
+	return await db.coupon.findOne({ _id }, { projection: fields });
 };
 
 // 쿠폰 구매
