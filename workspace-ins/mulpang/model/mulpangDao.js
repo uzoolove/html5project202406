@@ -65,12 +65,24 @@ module.exports.couponList = async (qs={}) => {
 // 쿠폰 상세 조회
 module.exports.couponDetail = async (_id) => {
 	// coupon, shop, epilogue 조인
-	
+	const coupon = await db.coupon.aggregate([{
+    $match: { _id }
+  // }, {
+
+  // }, {
+
+  // }, {
+
+  }]).next();
+
+
+
 	// 뷰 카운트를 하나 증가시킨다.
 	
 	// 웹소켓으로 수정된 조회수 top5를 전송한다.
 	
-
+  console.log(coupon);
+  return coupon;
 };
 
 // 구매 화면에 보여줄 쿠폰 정보 조회
