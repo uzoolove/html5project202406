@@ -67,12 +67,25 @@ module.exports.couponDetail = async (_id) => {
 	// coupon, shop, epilogue 조인
 	const coupon = await db.coupon.aggregate([{
     $match: { _id }
-  // }, {
-
-  // }, {
-
-  // }, {
-
+  }, {
+    // shop 조인
+    $lookup: {
+      from: 'shop',
+      localField: 'shopId', // coupon.shopId
+      foreignField: '_id', // shop._id
+      as: 'shop'
+    }
+  }, {
+    // shop 조인 결과(배열)에서 배열을 풀어 헤친다.
+    $unwind: '$shop'
+  }, {
+    // epilogue 조인
+    $lookup: {
+      from: 'epilogue',
+      localField: '_id', // coupon._id
+      foreignField: 'couponId', // epilogue.couponId
+      as: 'epilogueList'
+    }
   }]).next();
 
 
