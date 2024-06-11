@@ -25,6 +25,7 @@ db.member.find({ name: 'admin' });
 
 // name이 lee이고 age가 20
 db.member.find({ name: 'lee', age: 20 });
+db.member.find({ $or: [{name: 'lee'}, {age: 35}] });
 
 // age가 35 이상
 db.member.find({ age: { $gte: 35 } });
