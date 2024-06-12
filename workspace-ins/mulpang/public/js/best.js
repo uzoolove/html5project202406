@@ -8,9 +8,9 @@ function testChart(){
   ];
 	
 	drawSaleGraph(data);	
-	// drawPointGraph(data);
-	// drawViewGraph(data);
-	// drawReplyGraph(data);
+	drawPointGraph(data);
+	drawViewGraph(data);
+	drawReplyGraph(data);
 }
 
 $(() => {
@@ -21,7 +21,12 @@ $(() => {
 function drawSaleGraph(data){
 	const context = document.querySelector('#graph_by_sale').getContext('2d');
 	// TODO x, y 축 그리기
-
+  context.beginPath();
+  context.moveTo(70, 10);
+  context.lineTo(70, 231);
+  context.lineTo(470, 231);
+  context.lineWidth = 2;
+  context.stroke();
 
 	// 막대그래프 그리기
 	const r = 210 / data[0].value; // 높이 비율
@@ -36,7 +41,7 @@ function drawSaleGraph(data){
 		// 채우기 스타일 지정
 		context.fillStyle = 'rgba(186, 68, 10, 0.' + (7-i) + ')';
 		// TODO 막대 그래프 그리기
-		
+		context.fillRect(x, y, barW, barH);
 		
     // 텍스트 스타일 지정
     context.font = '12px "돋움, dotum, 굴림, gulim, sans-serif"';
@@ -44,7 +49,8 @@ function drawSaleGraph(data){
 		context.textAlign = 'center';
 		
 		// TODO 레이블 출력
-    
+    context.fillText(coupon.couponName, x + barW/2, 246);
+    context.fillText(coupon.value, x + barW/2, y-2);
   });
 }
 

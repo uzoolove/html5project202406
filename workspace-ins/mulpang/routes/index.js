@@ -48,9 +48,10 @@ router.get('/location', async function(req, res, next){
 router.get('/best', async function(req, res, next){
   res.render('best');
 });
-// top5 쿠폰 조회
+// top5 쿠폰 조회(http://localhost/topCoupon?condition=buyQuantity)
 router.get('/topCoupon', async function(req, res, next){
-  res.json([]);
+  const list = await model.topCoupon(req.query.condition);
+  res.json(list);
 });
 // 모두 메뉴
 router.get('/all', async function(req, res, next){
