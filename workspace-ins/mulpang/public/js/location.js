@@ -86,25 +86,43 @@ function addCouponToMap(){
       lat: article.data('lat'),
       lng: article.data('lng')
     };
+    article.data('position', position);
     // 쿠폰 마커 생성 
     const mulpangMarker = document.createElement('img');
     mulpangMarker.src = '/css/svg/icon_map_coupon.svg';
-    new google.maps.marker.AdvancedMarkerElement({
+    const marker = new google.maps.marker.AdvancedMarkerElement({
       map,
       position,
       title: couponName,
       content: mulpangMarker
     });
     // 지도 클릭 시 보여줄 정보창 생성
+    const info = new google.maps.InfoWindow({
+      position,
+      content: article.html()
+    });
     
     // 마커 클릭 이벤트 추가
-    
+    marker.addListener('click', () => {
+      if(openWindow) openWindow.close();
+      info.open(map);
+      openWindow = info;
+    });
 	});
 
 	// 2.2 지도 범위 내의 쿠폰을 슬라이더에 보여준다.
 	function showSlider(){
-		
+		const bounds = map.getBounds();
+    articleList.each(function(){
+      const article = $(this);
+      if(bounds.contains(article.data('position'))){
+        article.show();
+      }else{
+        article.hide();
+      }
+    });
 		// 첫번째 쿠폰으로 슬라이더 이동
+    slide(0);
 		
 		// 현재 위치를 history에 기록
 		
@@ -112,11 +130,12 @@ function addCouponToMap(){
 
 	// 지도 로딩완료 이벤트
 	google.maps.event.addListenerOnce(map, 'tilesloaded', function() {
-		
+		showSlider();
 		// 2.3 지도의 범위가 변경될 경우 지도안의 쿠폰을 슬라이더에 보여주도록 이벤트 추가
-		
+		map.addListener('zoom_changed', showSlider);
+    map.addListener('dragend', showSlider);
 		// 3. 슬라이드 이벤트 추가
-		
+		setSlideEvent();
 	});
 }
 	
