@@ -113,6 +113,7 @@ module.exports.buyCouponForm = async (_id) => {
 
 // 쿠폰 구매
 module.exports.buyCoupon = async (params) => {
+  console.log(params)
 	// 구매 컬렉션에 저장할 형태의 데이터를 만든다.
 	const document = {
 		couponId: Number(params.couponId),
@@ -129,9 +130,18 @@ module.exports.buyCoupon = async (params) => {
 	};
 
 	// TODO 구매 정보를 등록한다.
-	
-	// TODO 쿠폰 구매 건수를 하나 증가시킨다.
-	
+  try{
+    const sequence = await db.sequence.findOneAndUpdate({ _id: 'purchase' }, { $inc: { value: 1 } });
+    document._id = sequence.value;
+    db.purchase.insertOne(document);
+    
+    // TODO 쿠폰 구매 건수를 하나 증가시킨다.
+    
+  }catch(err){
+    console.error(err);
+    throw new Error('쿠폰 구매에 실패했습니다. 잠시후 다시 시도하시기 바랍니다.');
+  }
+  
 };	
 	
 // 추천 쿠폰 조회
