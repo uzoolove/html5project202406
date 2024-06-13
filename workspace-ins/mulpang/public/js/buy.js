@@ -2,6 +2,7 @@ $(function(){
 	setCancelEvent();
 	setBuyEvent();
 	setPriceEvent();	
+  // $('button.test').on('click', () => $('tbody > tr').last().clone().appendTo('tbody').find('label').text('추가 사항'));
 });
 
 // 취소 버튼 클릭
