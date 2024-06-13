@@ -10,9 +10,15 @@ $(() => {
 
 // 관심쿠폰을 보여준다.
 common.cart.showCart = () => {
-  // const cartElement = '<li data-couponid="' + couponId + '"><a href="/coupons/' + couponId + '"><img src="' + coupon.img + '" alt="' + coupon.name + '"></a><button class="cart_close">관심쿠폰 삭제</button></li>';
-  
-
+  const cartList = $('#cart > ul').empty();
+  const cart = JSON.parse(localStorage.cart || '{}');
+  for(const couponId in cart){
+    const coupon = cart[couponId];
+    const cartElement = '<li data-couponid="' + couponId + '"><a href="/coupons/' + couponId + '"><img src="' + coupon.image + '" alt="' + coupon.name + '"></a><button class="cart_close">관심쿠폰 삭제</button></li>';
+    cartList.append(cartElement);
+  }
+  $('.interest_cnt').text(Object.keys(cart).length);
+  common.cart.setRemoveCartEvent();
   // TODO 알림메세지 승인시 관심쿠폰 수량 요청 시작
   
 };
