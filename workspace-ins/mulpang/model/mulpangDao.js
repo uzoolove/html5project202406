@@ -207,7 +207,8 @@ const topCoupon = module.exports.topCoupon = async (condition) => {
 
 // 지정한 쿠폰 아이디 목록을 받아서 남은 수량을 넘겨준다.
 module.exports.couponQuantity = async (coupons) => {
-
+  const list = await db.coupon.find({ _id: { $in: coupons } }, { projection: { quantity: 1, buyQuantity: 1, couponName: 1 } }).toArray();
+  return list;
 };
 
 // 임시로 저장한 프로필 이미지를 회원 이미지로 변경한다.
