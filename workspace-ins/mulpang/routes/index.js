@@ -19,7 +19,8 @@ router.get('/today', async function(req, res, next){
 
 // 상세 조회 화면
 router.get('/coupons/:no', async function(req, res, next){
-  const coupon = await model.couponDetail(Number(req.params.no));
+  const io = req.app.get('io');
+  const coupon = await model.couponDetail(Number(req.params.no), io);
   res.render('detail', { coupon, toStar });
 });
 

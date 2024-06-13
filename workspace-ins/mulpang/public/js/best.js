@@ -14,7 +14,15 @@ function testChart(){
 }
 
 $(() => {
-	testChart();
+	// testChart();
+  $.getJSON('/topCoupon?condition=buyQuantity', drawSaleGraph);
+  $.getJSON('/topCoupon?condition=satisfactionAvg', drawPointGraph);
+  $.getJSON('/topCoupon?condition=viewCount', drawViewGraph);
+  $.getJSON('/topCoupon?condition=epilogueCount', drawReplyGraph);
+
+  // 웹소켓 서버 접속
+  const socket = io();
+  socket.on('new5', drawViewGraph);
 });
 
 // 판매순 그래프를 그린다.(Canvas)
