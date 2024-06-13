@@ -52,7 +52,7 @@ common.cart.requestQuantity = () => {
         const msg = cartCoupon.name + ' 수량이 ' + count + '개 밖에 남지 않았습니다.';
         common.cart.showNoti({
           tag: coupon._id,
-          icon: cartCoupon.img,
+          icon: cartCoupon.image,
           body: msg
         });
         cartCoupon.noti = count;
@@ -64,7 +64,7 @@ common.cart.requestQuantity = () => {
 
 // 바탕화면 알림 서비스를 보여준다.
 common.cart.showNoti = (noti) => {	
-	
+	console.log(noti);
 };
 
 
