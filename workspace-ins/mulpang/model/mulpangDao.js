@@ -171,12 +171,12 @@ module.exports.buyCoupon = async (params) => {
     
     // TODO 쿠폰 구매 건수를 하나 증가시킨다.
     await db.coupon.updateOne({ _id: document.couponId }, { $inc: { buyQuantity: document.quantity } });
+    return document._id;
   }catch(err){
     console.error(err);
     throw new Error('쿠폰 구매에 실패했습니다. 잠시후 다시 시도하시기 바랍니다.');
   }
-  
-};	
+};
 	
 // 추천 쿠폰 조회
 const topCoupon = module.exports.topCoupon = async (condition) => {

@@ -25,6 +25,22 @@ function setBuyEvent(){
       alert('쿠폰 구매가 완료되었습니다.');
       location.href = '/';
     }
+
+
+    // const xhr = new XMLHttpRequest();
+    // xhr.onreadystatechange = function(){
+    //   if(xhr.readyState == 4 && xhr.status == 200){
+    //     const result = JSON.parse(xhr.responseText);
+    //     if(result.errors){
+    //       alert(result.errors.message);
+    //     }else{
+    //       alert('쿠폰 구매가 완료되었습니다.');
+    //       location.href = '/';
+    //     }
+    //   }      
+    // };
+    // xhr.open('POST', '/purchase');
+    // xhr.send(body);
   });
 }
 
