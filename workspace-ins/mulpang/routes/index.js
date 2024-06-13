@@ -12,9 +12,21 @@ router.get('/', function(req, res, next) {
 });
 
 // 오늘 메뉴
-router.get('/today', async function(req, res, next){
+router.get('/today', async function(req, res, next) {
+  req.query.page = Number(req.query.page) || 1;
+
   const list = await model.couponList(req.query);
-  res.render('today', { list, query: req.query, options: generateOptions });
+
+  const params = {};
+
+  if(req.query.page > 1){
+    params.prePage = (new URLSearchParams({ ...req.query, page: req.query.page-1 })).toString();
+  }
+  if(req.query.page < list.totalPage){
+    params.nextPage = (new URLSearchParams({ ...req.query, page:  req.query.page+1 })).toString();
+  }
+    
+  res.render('today', { list, params, query: req.query, options: generateOptions });
 });
 
 // 상세 조회 화면

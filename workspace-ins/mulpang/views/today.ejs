@@ -51,9 +51,17 @@
 				</div>
 			</section>
 			<div id="coupon_control">
-        <button type="button" class="btn_pre">이전</button>
-				<a href="/today2.html"><button type="button" class="btn_next">다음</button></a>		
-			</div>
+        <% if(params.prePage){ %>
+          <a href="/today?<%=params.prePage%>"><button type="button" class="btn_pre">이전</button></a>
+        <% }else{ %>
+          <button type="button" class="btn_pre">이전</button>
+        <% } %>
+        <% if(params.nextPage){ %>
+          <a href="/today?<%=params.nextPage%>"><button type="button" class="btn_next">다음</button></a>
+        <% }else{ %>
+          <button type="button" class="btn_next">다음</button>
+        <% } %>
+      </div>
 		</div>
 
     <%- include('layout/footer') %>
