@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 const model = require('../model/mulpangDao');
-const { toStar } = require('../utils/myutil');
+const { toStar, generateOptions } = require('../utils/myutil');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -13,8 +13,8 @@ router.get('/', function(req, res, next) {
 
 // 오늘 메뉴
 router.get('/today', async function(req, res, next){
-  const list = await model.couponList();
-  res.render('today', { list });
+  const list = await model.couponList(req.query);
+  res.render('today', { list, query: req.query, options: generateOptions });
 });
 
 // 상세 조회 화면
@@ -56,7 +56,8 @@ router.get('/topCoupon', async function(req, res, next){
 });
 // 모두 메뉴
 router.get('/all', async function(req, res, next){
-  res.render('all');
+  const list = await model.couponList(req.query);
+  res.render('all', { list, query: req.query, options: generateOptions });
 });
 // 쿠폰 남은 수량 조회
 router.get('/couponQuantity', async function(req, res, next){
