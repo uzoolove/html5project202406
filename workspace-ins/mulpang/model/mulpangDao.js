@@ -3,6 +3,7 @@ const path = require('node:path');
 const fs = require('node:fs');
 const moment = require('moment');
 const MyUtil = require('../utils/myutil');
+const MyError = require('../errors');
 
 // DB 접속
 let db;
@@ -175,7 +176,8 @@ module.exports.buyCoupon = async (params) => {
     return document._id;
   }catch(err){
     console.error(err);
-    throw new Error('쿠폰 구매에 실패했습니다. 잠시후 다시 시도하시기 바랍니다.');
+    throw MyError.FAIL;
+    // throw new Error('쿠폰 구매에 실패했습니다. 잠시후 다시 시도하시기 바랍니다.');
   }
 };
 	
@@ -239,9 +241,11 @@ module.exports.registMember = async (params) => {
     console.error(err);
     // 아이디 중복 여부 체크
     if(err.code === 11000){
-      throw new Error('이미 등록된 이메일입니다.');
+      throw MyError.USER_DUPLICATE;
+      // throw new Error('이미 등록된 이메일입니다.');
     }else{
-      throw new Error('작업 처리에 실패했습니다. 잠시후 다시 시도하시기 바랍니다.');
+      throw MyError.FAIL;
+      // throw new Error('작업 처리에 실패했습니다. 잠시후 다시 시도하시기 바랍니다.');
     }
   }
 };
@@ -253,10 +257,12 @@ module.exports.login = async (params) => {
     var result = await db.member.findOne(params, { projection: { profileImage: 1 } });
   }catch(err){
     console.error(err);
-    throw new Error('작업 처리에 실패했습니다. 잠시후 다시 시도하시기 바랍니다.');
+    throw MyError.FAIL;
+    // throw new Error('작업 처리에 실패했습니다. 잠시후 다시 시도하시기 바랍니다.');
   }
   if(!result){  // 로그인 실패
-    throw new Error('아이디와 비밀번호를 확인하시기 바랍니다.');
+    throw MyError.LOGIN_FAIL;
+    // throw new Error('아이디와 비밀번호를 확인하시기 바랍니다.');
   }
   return result;
 };
@@ -303,7 +309,8 @@ module.exports.updateMember = async (userid, params) => {
     // 이전 비밀번호로 회원 정보를 조회한다.
     var member = await db.member.findOne({ _id: userid, password: oldPassword }, { projection: { profileImage: 1 } });
     if(!member){
-      throw new Error('이전 비밀번호가 맞지 않습니다.');
+      throw MyError.PASSWORD_INCRRECT;
+      // throw new Error('이전 비밀번호가 맞지 않습니다.');
     }else{
       // 프로필 이미지를 수정할 경우
       if(params.tmpFileName){
@@ -317,7 +324,8 @@ module.exports.updateMember = async (userid, params) => {
     return member;
   }catch(err){
     console.error(err);
-    throw new Error('작업 처리에 실패했습니다. 잠시후 다시 시도하시기 바랍니다.');
+    throw MyError.FAIL;
+    // throw new Error('작업 처리에 실패했습니다. 잠시후 다시 시도하시기 바랍니다.');
   }
 };
 
@@ -345,6 +353,7 @@ module.exports.insertEpilogue = async (userid, epilogue) => {
     return epilogueResult.insertedId;
   }catch(err){
     console.error(err);
-    throw new Error('작업 처리에 실패했습니다. 잠시후 다시 시도하시기 바랍니다.');
+    throw MyError.FAIL;
+    // throw new Error('작업 처리에 실패했습니다. 잠시후 다시 시도하시기 바랍니다.');
   }
 };

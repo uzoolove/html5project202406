@@ -61,7 +61,8 @@ router.post('/purchase', checklogin, async function(req, res, next){
     //   res.json({ errors: { message: '로그인 후 구매 가능합니다.' } });
     // }
   }catch(err){
-    res.json({ errors: { message: err.message } });
+    next(err);
+    // res.json({ errors: { message: err.message } });
   }
 });
 
