@@ -1,0 +1,33 @@
+14. 세션 관리
+1) app.js 수정
+
+const session = require('express-session');
+// "/couponQuantity"로 시작하지 않는 url에 세션 사용
+app.use(/^((?!\/couponQuantity).)*$/, session({
+  cookie: {maxAge: 1000*60*30},// 30분
+  secret: 'some seed text',
+  rolling: true,  // 매 요청마다 세션 시간 초기화
+  resave: false,  // 세션이 수정되지 않으면 서버에 다시 저장하지 않음
+  saveUninitialized: false  // 세션에 아무 값도 지정되지 않으면 클라이언트에 전송 안함
+}), function(req, res, next){
+  // ejs 렌더링에 사용할 로그인 정보 지정
+  res.locals.user = req.session.user;
+  next();
+});
+
+6) 로그인 체크용 미들웨어 작성
+
+function requireLogin(req, res, next){
+  if(req.session.user){
+    next();
+  }else{
+    if(req.xhr){
+      res.json({errors: {message: '로그인이 필요한 서비스입니다.'}});
+    }else{
+      req.session.backurl = req.originalUrl;
+      res.redirect('/users/login');
+    }
+  }
+}
+module.exports = requireLogin;
+
