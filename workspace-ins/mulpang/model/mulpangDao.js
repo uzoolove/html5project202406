@@ -151,7 +151,8 @@ module.exports.buyCoupon = async (params) => {
 	// 구매 컬렉션에 저장할 형태의 데이터를 만든다.
 	const document = {
 		couponId: Number(params.couponId),
-		email: 'uzoolove@gmail.com',	// 나중에 로그인한 id로 대체
+		// email: 'uzoolove@gmail.com',	// 나중에 로그인한 id로 대체
+    email: params.userId,
 		quantity: Number(params.quantity),
 		paymentInfo: {
 			cardType: params.cardType,
@@ -262,15 +263,88 @@ module.exports.login = async (params) => {
 
 // 회원 정보 조회
 module.exports.getMember = async (userid) => {
-	
+  const result = await db.purchase.aggregate([
+    { $match: { email: userid } },
+    { $lookup: {
+        from: 'coupon', // 대상 컬렉션
+        localField: 'couponId', // purchase.couponId
+        foreignField: '_id', // coupon._id
+        as: 'coupon'
+    } },
+    { $unwind: '$coupon' },
+    { $lookup: {
+        from: 'epilogue',
+        localField: 'epilogueId', // purchase.epilogueId
+        foreignField: '_id', // epilogue._id
+        as: 'epilogue'
+    } },
+    { $unwind: {
+        path: '$epilogue',
+        preserveNullAndEmptyArrays: true // 조인되지 않아도 빈 배열로 결과에 추가
+    } },
+    { $project: {
+        _id: 1,
+        couponId: 1, 
+        regDate: 1,
+        'coupon._id': 1,
+        'coupon.couponName': 1,
+        'coupon.image.main': 1,
+        epilogue: 1
+    } },
+    { $sort: { regDate: -1 } }
+  ]).toArray();
+  return result;
 };
 
 // 회원 정보 수정
 module.exports.updateMember = async (userid, params) => {
-	
+	const oldPassword = params.oldPassword;
+  try{
+    // 이전 비밀번호로 회원 정보를 조회한다.
+    var member = await db.member.findOne({ _id: userid, password: oldPassword }, { projection: { profileImage: 1 } });
+    if(!member){
+      throw new Error('이전 비밀번호가 맞지 않습니다.');
+    }else{
+      // 프로필 이미지를 수정할 경우
+      if(params.tmpFileName){
+        saveImage(params.tmpFileName, member.profileImage);
+      }
+      // 비밀번호 수정일 경우
+      if(params.password.trim() != ''){
+        await db.member.updateOne({ _id: userid }, { $set: { password: params.password } });
+      }
+    }
+    return member;
+  }catch(err){
+    console.error(err);
+    throw new Error('작업 처리에 실패했습니다. 잠시후 다시 시도하시기 바랍니다.');
+  }
 };
 
 // 쿠폰 후기 등록
 module.exports.insertEpilogue = async (userid, epilogue) => {
-	
+	const sequence = await db.sequence.findOneAndUpdate({ _id: 'epilogue' }, { $inc: {value: 1} });
+  epilogue._id = sequence.value;
+  epilogue.regDate = moment().format('YYYY-MM-DD HH:mm:ss');
+  epilogue.writer = userid;
+
+  try{
+    // 후기를 등록한다.
+    const epilogueResult = await db.epilogue.insertOne(epilogue);
+    // 구매 컬렉션에 후기 아이디를 추가한다.
+    await db.purchase.updateOne({ _id: epilogue.purchaseId }, { $set: { epilogueId: epilogue._id } });    
+    // 쿠폰 컬렉션의 후기 수와 만족도 평균을 업데이트 한다.
+    const coupon = await db.coupon.findOne({ _id: epilogue.couponId });
+    
+    const updateData = {
+      $inc: { epilogueCount: 1 },
+      $set: { satisfactionAvg: (coupon.satisfactionAvg * coupon.epilogueCount + Number(epilogue.satisfaction)) / (coupon.epilogueCount+1) }
+    };
+    await db.coupon.updateOne({ _id: epilogue.couponId }, updateData);
+    
+    return epilogueResult.insertedId;
+  }catch(err){
+    console.error(err);
+    throw new Error('작업 처리에 실패했습니다. 잠시후 다시 시도하시기 바랍니다.');
+  }
 };
