@@ -8,6 +8,8 @@ const dest = path.join(__dirname, '..', 'public', 'tmp');
 const model = require('../model/mulpangDao');
 const checklogin = require('../middleware/checklogin');
 
+const { toStar } = require('../utils/myutil');
+
 // 회원 가입 화면
 router.get('/new', function(req, res, next) {
   res.render('join');
@@ -57,15 +59,35 @@ router.post('/login', async function(req, res, next) {
 });
 // 마이 페이지
 router.get('/', checklogin, async function(req, res, next) {
-  res.render('mypage');
+  const userId = req.session.user._id;
+  const purchases = await model.getMember(userId);
+  res.render('mypage', { purchases, toStar });
 });
 // 회원 정보 수정
 router.put('/', checklogin, async function(req, res, next) {
-  res.end('success');
+  const userId = req.session.user._id;
+  try{
+    await model.updateMember(userId, req.body);
+    res.end('success');
+  }catch(err){
+    res.json({ errors: { message: err.message } });
+  }
 });
 // 구매 후기 등록
 router.post('/epilogue', checklogin, async function(req, res, next) {
-  res.end('success');
+  const userId = req.session.user._id;
+  try{
+    const epilogue = {
+      couponId: Number(req.body.couponId),
+      purchaseId: Number(req.body.purchaseId),
+      satisfaction: Number(req.body.satisfaction),
+      content: req.body.content
+    };
+    const epilogueId = await model.insertEpilogue(userId, epilogue);
+    res.json(String(epilogueId));
+  }catch(err){
+    res.json({ errors: { message: err.message } });
+  }
 });
 
 module.exports = router;

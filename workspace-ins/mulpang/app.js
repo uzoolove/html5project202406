@@ -59,20 +59,20 @@ app.use(/^((?!\/couponQuantity).)*$/, session({
 app.use(nocache());
 
 
-app.use(function(req, res, next){
-  console.log('라우터 직전 미들웨어');
-  console.log('http 모듈에서 제공');
-  console.log('req.method', req.method);
-  console.log('req.url', req.url);
-  console.log('req.headers', req.headers);
-  console.log('express에서 기본 제공');
-  console.log('req.query', req.query);
-  console.log('미들웨어에서 제공');
-  console.log('req.body', req.body);
-  console.log('req.cookies', req.cookies);
-  console.log('req.session', req.session);
-  next();
-});
+// app.use(function(req, res, next){
+//   console.log('라우터 직전 미들웨어');
+//   console.log('http 모듈에서 제공');
+//   console.log('req.method', req.method);
+//   console.log('req.url', req.url);
+//   console.log('req.headers', req.headers);
+//   console.log('express에서 기본 제공');
+//   console.log('req.query', req.query);
+//   console.log('미들웨어에서 제공');
+//   console.log('req.body', req.body);
+//   console.log('req.cookies', req.cookies);
+//   console.log('req.session', req.session);
+//   next();
+// });
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
