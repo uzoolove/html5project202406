@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const session = require('express-session');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -20,6 +21,19 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(logger('dev'));
+
+// "/couponQuantity"로 시작하지 않는 url에 세션 사용
+app.use(/^((?!\/couponQuantity).)*$/, session({
+  cookie: {maxAge: 1000*60*1},// 30분
+  secret: 'some seed text',
+  rolling: true,  // 매 요청마다 세션 시간 초기화
+  resave: false,  // 세션이 수정되지 않으면 서버에 다시 저장하지 않음
+  saveUninitialized: false  // 세션에 아무 값도 지정되지 않으면 클라이언트에 전송 안함
+}), function(req, res, next){
+  // ejs 렌더링에 사용할 로그인 정보 지정
+  res.locals.user = req.session.user;
+  next();
+});
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
