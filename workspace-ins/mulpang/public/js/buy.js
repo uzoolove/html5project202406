@@ -2,6 +2,7 @@ $(function(){
 	setCancelEvent();
 	setBuyEvent();
 	setPriceEvent();	
+  // $('button.test').on('click', () => $('tbody > tr').last().clone().appendTo('tbody').find('label').text('추가 사항'));
 });
 
 // 취소 버튼 클릭
@@ -24,10 +25,28 @@ function setBuyEvent(){
       alert('쿠폰 구매가 완료되었습니다.');
       location.href = '/';
     }
+
+
+    // const xhr = new XMLHttpRequest();
+    // xhr.onreadystatechange = function(){
+    //   if(xhr.readyState == 4 && xhr.status == 200){
+    //     const result = JSON.parse(xhr.responseText);
+    //     if(result.errors){
+    //       alert(result.errors.message);
+    //     }else{
+    //       alert('쿠폰 구매가 완료되었습니다.');
+    //       location.href = '/';
+    //     }
+    //   }      
+    // };
+    // xhr.open('POST', '/purchase');
+    // xhr.send(body);
   });
 }
 
 // 구매수량 수정시 결제가격 계산
 function setPriceEvent(){
-	
+	$('.detail form input[name=quantity]').on('input', function(){
+    $('form output[name=totalPrice]').text($(this).val() * $('form input[name=unitPrice]').val());
+  });
 }

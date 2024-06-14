@@ -1,21 +1,38 @@
 var express = require('express');
 var router = express.Router();
 
+const path = require('node:path');
+const multer = require('multer');
+const dest = path.join(__dirname, '..', 'public', 'tmp');
+
+const model = require('../model/mulpangDao');
+
 // 회원 가입 화면
 router.get('/new', function(req, res, next) {
   res.render('join');
 }); 
 // 프로필 이미지 업로드
-router.post('/profileUpload', function(req, res, next) {
-  res.end('tmpfile.png');   // 임시 파일명 응답
+router.post('/profileUpload', multer({ dest }).single('profile'), function(req, res, next) {
+  console.log(req.file);
+  res.end(req.file.filename);   // 임시 파일명 응답
 });
 // 회원 가입 요청
 router.post('/new', async function(req, res, next) {
-  res.end('success');
+  try{
+    const result = await model.registMember(req.body);
+    res.end(result);
+  }catch(err){
+    res.json({ errors: { message: err.message } });
+  }
 });
 // 간편 로그인
 router.post('/simpleLogin', async function(req, res, next) {
-  res.json({_id: 'uzoolove@gmail.com', profileImage: 'uzoolove@gmail.com'});
+  try{
+    const user = await model.login(req.body);
+    res.json(user);
+  }catch(err){
+    res.json({ errors: { message: err.message }});
+  }
 });
 // 로그아웃
 router.get('/logout', function(req, res, next) {
