@@ -130,7 +130,8 @@ common.login.setLoginEvent = () => {
       alert(result.errors.message);
     }else{
       // TODO 로그인 결과 출력
-      
+      alert('로그인 되었습니다.');
+      location.reload();
     }
   });
 };
