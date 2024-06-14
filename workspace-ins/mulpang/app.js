@@ -15,6 +15,15 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// 미들웨어(app.use()나 router에 등록하는 함수)
+// 1. (err), req, res, next를 매개변수로 정의한다.
+// 2. 처리하고 싶은 작업을 수행한다.
+// 3. 둘중 하나의 작업으로 종료한다.
+//    1) 다음 미들웨어를 호출한다(next())
+//    2) 클라이언트에 응답메세지를 전송한다.(res.render(), res.json(), res.end(), res.redirect() ...)
+
+
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
