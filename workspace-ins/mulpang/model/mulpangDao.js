@@ -212,16 +212,37 @@ module.exports.couponQuantity = async (coupons) => {
 };
 
 // 임시로 저장한 프로필 이미지를 회원 이미지로 변경한다.
-function saveImage(tmpFileName){
+function saveImage(tmpFileName, destFileName){
   const org = path.join(__dirname, '..', 'public', 'tmp', tmpFileName);
-  const dest = path.join(__dirname, '..', 'public', 'image', 'member', tmpFileName);
+  const dest = path.join(__dirname, '..', 'public', 'image', 'member', destFileName);
 	// TODO 임시 이미지를 member 폴더로 이동시킨다.
-	
+	fs.rename(org, dest, function(err){
+    if(err) console.error(err);
+  });
 }
 
 // 회원 가입
 module.exports.registMember = async (params) => {
-	
+	const member = {
+    _id: params._id,
+    password: params.password,
+    profileImage: params._id,
+    regDate: moment().format('YYYY-MM-DD HH:mm:ss')
+  };
+
+  try{
+    const result = await db.member.insertOne(member);
+    saveImage(params.tmpFileName, member.profileImage);
+    return result.insertedId;
+  }catch(err){
+    console.error(err);
+    // 아이디 중복 여부 체크
+    if(err.code === 11000){
+      throw new Error('이미 등록된 이메일입니다.');
+    }else{
+      throw new Error('작업 처리에 실패했습니다. 잠시후 다시 시도하시기 바랍니다.');
+    }
+  }
 };
 
 // 로그인 처리

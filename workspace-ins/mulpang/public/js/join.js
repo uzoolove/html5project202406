@@ -19,7 +19,7 @@ async function registMember(event){
       alert(result.errors.message);
     }else{
       // TODO 가입 결과 출력
-
+      alert('회원 가입이 완료되었습니다.');
     }
 	}
 }
