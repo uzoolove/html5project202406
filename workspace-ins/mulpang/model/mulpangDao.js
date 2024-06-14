@@ -129,7 +129,7 @@ module.exports.couponDetail = async (_id, io) => {
   const top5 = await topCoupon('viewCount');
   io.emit('new5', top5);
 	
-  console.log(coupon);
+  console.log(coupon.couponName);
   return coupon;
 };
 
