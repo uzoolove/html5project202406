@@ -46,7 +46,13 @@ router.get('/login', function(req, res, next) {
 });
 // 로그인
 router.post('/login', async function(req, res, next) {
-  res.redirect('/');
+  try{
+    const user = await model.login(req.body);
+    req.session.user = user;
+    res.redirect(req.session.backurl || '/');
+  }catch(err){
+    res.render('login', { errors: err });
+  }
 });
 // 마이 페이지
 router.get('/', async function(req, res, next) {

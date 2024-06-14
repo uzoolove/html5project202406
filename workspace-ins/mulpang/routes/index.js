@@ -38,8 +38,14 @@ router.get('/coupons/:no', async function(req, res, next){
 
 // 구매 화면
 router.get('/purchases/:no', async function(req, res, next){
-  const coupon = await model.buyCouponForm(Number(req.params.no));
-  res.render('buy', { coupon });
+  const user = req.session.user;
+  if(user){
+    const coupon = await model.buyCouponForm(Number(req.params.no));
+    res.render('buy', { coupon });
+  }else{
+    req.session.backurl = req.originalUrl;
+    res.redirect('/users/login');
+  }  
 });
 
 // 구매 등록
